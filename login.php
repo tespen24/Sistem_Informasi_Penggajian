@@ -1,210 +1,122 @@
 <?php
 require_once 'config/config.php';
 
-// Jika sudah login
+// Jika sudah login, langsung arahkan ke dashboard sesuai role
 if (isset($_SESSION['id_akun'])) {
-    header("Location: dashboard.php");
+    if ($_SESSION['role'] === 'admin') {
+        header("Location: dashboard_admin.php");
+    } else {
+        header("Location: dashboard_karyawan.php");
+    }
     exit;
 }
 
-$error = "";
+$error = '';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
-
-    if (empty($username) || empty($password)) {
-        $error = "Username dan Password wajib diisi.";
+    if ($username === '' || $password === '') {
+        $error = "Username dan password wajib diisi!";
     } else {
-        // Prepared Statement
-        $stmt = mysqli_prepare($conn, "SELECT * FROM akun WHERE username = ?");
-        mysqli_stmt_bind_param($stmt, "s", $username);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+        $stmt = $koneksi->prepare("SELECT * FROM akun WHERE username = :username LIMIT 1");
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        $akun = $stmt->fetch();
 
-        if (mysqli_num_rows($result) == 1) {
-            $user = mysqli_fetch_assoc($result);
+        if ($akun && password_verify($password, $akun['password'])) {
+            $_SESSION['id_akun']  = $akun['id_akun'];
+            $_SESSION['username'] = $akun['username'];
+            $_SESSION['role']     = $akun['role'];
 
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['id_akun'] = $user['id_akun'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role'];
-
-                header("Location: dashboard.php");
-                exit;
+            if ($akun['role'] === 'admin') {
+                header("Location: dashboard_admin.php");
             } else {
-                $error = "Password salah.";
+                header("Location: dashboard_karyawan.php");
             }
+            exit;
         } else {
-            $error = "Username tidak ditemukan.";
+            $error = "Username atau password salah!";
         }
-
-        mysqli_stmt_close($stmt);
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login | Sistem Informasi Penggajian</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistem Informasi Penggajian</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
         body {
-            background-color: #ffffff; /* Latar belakang putih bersih luar */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .login-container {
-            min-height: vh-100;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: linear-gradient(135deg, #0d6efd, #084298);
         }
-
-        .login-box {
+        .login-card {
             width: 100%;
-            max-width: 420px;
-            padding: 35px;
-            border: 1px solid #e0e0e0;
-            background-color: #ffffff;
-            /* Box shadow tipis sesuai gambar */
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05); 
+            max-width: 400px;
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 1rem 3rem rgba(0,0,0,.25);
         }
-
-        /* Kotak Placeholder Logo Anda */
-        .logo-placeholder {
-            width: 65px;
-            height: 65px;
-            border: 2px solid #0056b3; /* Warna border sementara */
-            margin: 0 auto 12px auto;
+        .login-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #0d6efd;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f8f9fa;
-        }
-
-        .logo-placeholder span {
-            font-size: 10px;
-            color: #6c757d;
-            text-align: center;
-        }
-
-        .app-title {
-            font-size: 14px;
-            color: #333333;
-            margin-bottom: 30px;
-            font-weight: 500;
-        }
-
-        /* Customisasi Form Label sesuai gambar (Hijau) */
-        .form-label-custom {
-            color: #868686; 
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 6px;
-        }
-
-        /* Customisasi Input Field (Border hijau tipis, background biru muda transparan) */
-        .form-control-custom {
-            border: 1px solid #868686 !important;
-            background-color: #ffffff !important;
-            border-radius: 0px; /* Sesuai gambar yang cenderung kotak tajam */
-            padding: 8px 12px;
-            color: #333;
-        }
-
-        .form-control-custom:focus {
-            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
-        }
-
-        /* Tombol Sign In Biru */
-        .btn-sign-in {
-            background-color: #337ab7;
-            border-color: #2e6da4;
-            color: #ffffff;
-            border-radius: 0px;
-            padding: 6px 20px;
-            font-size: 14px;
-        }
-
-        .btn-sign-in:hover {
-            background-color: #286090;
-            border-color: #204d74;
-            color: #ffffff;
-        }
-
-        .remember-text {
-            color: #666666;
-            font-size: 13px;
-        }
-        
-        .checkbox-custom {
-            border: 1px solid #ccc;
-            width: 16px;
-            height: 16px;
+            margin: -55px auto 15px auto;
+            color: #fff;
+            font-size: 2rem;
+            box-shadow: 0 0 0 6px #fff;
         }
     </style>
 </head>
-
 <body>
-
-<div class="container login-container vh-100">
-    <div class="login-box text-center">
-        
-        <div class="logo-placeholder">
-            <span>LOGO</span>
+    <div class="card login-card p-4">
+        <div class="login-icon">
+            <i class="bi bi-person-lock"></i>
         </div>
-        
-        <div class="app-title">Sistem Informasi Penggajian</div>
+        <div class="card-body">
+            <h4 class="text-center fw-bold mb-1">Sistem Informasi Penggajian</h4>
+            <p class="text-center text-muted mb-4">Silakan masuk untuk melanjutkan</p>
 
-        <?php if (!empty($error)) : ?>
-            <div class="alert alert-danger text-start py-2 px-3 style="font-size: 13px;">
-                <?= $error; ?>
-            </div>
-        <?php endif; ?>
-
-        <form method="POST" class="text-start">
-            
-            <div class="mb-3">
-                <label class="form-label form-label-custom">Username</label>
-                <input
-                    type="text"
-                    name="username"
-                    class="form-control form-control-custom"
-                    value="ce324003"
-                    required
-                    autofocus>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label form-label-custom">Password</label>
-                <input
-                    type="password"
-                    name="password"
-                    class="form-control form-control-custom"
-                    required>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mt-4">
-                <div class="form-check d-flex align-items-center gap-2 ps-0">
-                    <input type="checkbox" id="rememberMe" class="checkbox-custom">
-                    <label for="rememberMe" class="remember-text">Remember Me</label>
+            <?php if ($error): ?>
+                <div class="alert alert-danger py-2">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i> <?= htmlspecialchars($error) ?>
                 </div>
-                <button type="submit" class="btn btn-sign-in">Sign In</button>
-            </div>
+            <?php endif; ?>
 
-        </form>
-
+            <form method="POST" action="login.php">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                        <input type="text" name="username" class="form-control" placeholder="Masukkan username" required autofocus>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                        <input type="password" name="password" class="form-control" placeholder="Masukkan password" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                </button>
+            </form>
+        </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,38 +1,58 @@
 <?php
+/**
+ * config.php
+ * Konfigurasi koneksi database & fungsi bantu untuk autentikasi.
+ */
 
-// ======================================================
-// KONFIGURASI SISTEM 
-// ======================================================
-
-// URL Project
-define('BASE_URL', 'http://localhost/SistemInformasiPenggajian/');
-
-// Timezone
-date_default_timezone_set('Asia/Jakarta');
-
-// Mulai Session
+// Mulai session di sini agar semua halaman yang meng-include config.php
+// otomatis punya akses ke $_SESSION
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ======================================================
-// KONFIGURASI DATABASE
-// ======================================================
+// ==== KONFIGURASI DATABASE ====
+$host     = 'localhost';
+$dbname   = 'db_penggajian';
+$db_user  = 'root';
+$db_pass  = '';
 
-$db_host = "localhost";
-$db_user = "root";
-$db_pass = "";
-$db_name = "db_penggajian";
-
-// Membuat koneksi
-$conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
-
-// Cek koneksi
-if (!$conn) {
-    die("Koneksi database gagal : " . mysqli_connect_error());
+try {
+    $koneksi = new PDO(
+        "mysql:host={$host};dbname={$dbname};charset=utf8mb4",
+        $db_user,
+        $db_pass
+    );
+    $koneksi->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $koneksi->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Koneksi database gagal: " . $e->getMessage());
 }
 
-// Mengatur charset
-mysqli_set_charset($conn, "utf8mb4");
+// ==== BASE URL ====
+// Sesuaikan dengan nama folder project di web server (mis. htdocs/SistemInformasiPenggajian)
+define('BASE_URL', '/SistemInformasiPenggajian/');
 
-?>
+/**
+ * Memastikan user sudah login.
+ * Jika belum, redirect ke halaman login.
+ */
+function cek_login()
+{
+    if (!isset($_SESSION['id_akun'])) {
+        header("Location: " . BASE_URL . "login.php");
+        exit;
+    }
+}
+
+/**
+ * Membatasi akses halaman hanya untuk role tertentu.
+ * Contoh: cek_role(['admin']);
+ */
+function cek_role(array $role_diizinkan)
+{
+    cek_login();
+    if (!in_array($_SESSION['role'], $role_diizinkan)) {
+        header("Location: " . BASE_URL . "login.php");
+        exit;
+    }
+}
