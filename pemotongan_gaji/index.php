@@ -2,15 +2,15 @@
 require_once '../config/config.php';
 cek_role(['admin']);
 
-$judul_halaman = 'potongan Gaji - SI Penggajian';
+$judul_halaman = 'Potongan Gaji - SI Penggajian';
 
 $flash_success = $_SESSION['flash_success'] ?? null;
 $flash_error   = $_SESSION['flash_error'] ?? null;
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
 // ==== FILTER ====
-$cari    = trim($_GET['cari'] ?? '');
-$bulan   = trim($_GET['bulan'] ?? '');   // format: YYYY-MM dari input type="month"
+$cari  = trim($_GET['cari'] ?? '');
+$bulan = trim($_GET['bulan'] ?? '');   // format: YYYY-MM dari input type="month"
 
 $where  = [];
 $params = [];
@@ -46,10 +46,10 @@ require_once '../component/sidebar.php';
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
         <h3 class="fw-bold mb-0">Potongan Gaji</h3>
-        <p class="text-muted mb-0">Kelola pendapatan tambahan / bonus karyawan di luar gaji pokok</p>
+        <p class="text-muted mb-0">Kelola denda, kasbon, atau potongan lain milik karyawan</p>
     </div>
     <a href="tambah.php" class="btn btn-primary">
-        <i class="bi bi-plus-circle me-1"></i> Tambah potongan
+        <i class="bi bi-plus-circle me-1"></i> Tambah Potongan
     </a>
 </div>
 
@@ -92,8 +92,8 @@ require_once '../component/sidebar.php';
                     <tr>
                         <th>#</th>
                         <th>Nama Karyawan</th>
-                        <th>Jenis potongan</th>
-                        <th>Total potongan</th>
+                        <th>Jenis Potongan</th>
+                        <th>Total Potongan</th>
                         <th>Tanggal</th>
                         <th class="text-center">Aksi</th>
                     </tr>
@@ -112,7 +112,7 @@ require_once '../component/sidebar.php';
                                 <td><?= $no++ ?></td>
                                 <td><?= htmlspecialchars($row['nama']) ?></td>
                                 <td><?= htmlspecialchars($row['nama_potongan']) ?></td>
-                                <td class="text-success fw-semibold">Rp <?= number_format($row['total_potongan'], 0, ',', '.') ?></td>
+                                <td class="text-danger fw-semibold">Rp <?= number_format($row['total_potongan'], 0, ',', '.') ?></td>
                                 <td><?= date('d-m-Y', strtotime($row['tanggal_potongan'])) ?></td>
                                 <td class="text-center">
                                     <a href="edit.php?id=<?= $row['id_potongan'] ?>" class="btn btn-sm btn-warning text-white" title="Edit">
@@ -133,7 +133,7 @@ require_once '../component/sidebar.php';
                     <tfoot>
                         <tr class="table-light fw-bold">
                             <td colspan="3" class="text-end">Total Keseluruhan:</td>
-                            <td class="text-success">Rp <?= number_format($total_keseluruhan, 0, ',', '.') ?></td>
+                            <td class="text-danger">Rp <?= number_format($total_keseluruhan, 0, ',', '.') ?></td>
                             <td colspan="2"></td>
                         </tr>
                     </tfoot>

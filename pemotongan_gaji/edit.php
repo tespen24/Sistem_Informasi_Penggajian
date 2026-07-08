@@ -2,7 +2,7 @@
 require_once '../config/config.php';
 cek_role(['admin']);
 
-$judul_halaman = 'Edit potongan Gaji - SI Penggajian';
+$judul_halaman = 'Edit Potongan Gaji - SI Penggajian';
 
 $id_potongan = $_GET['id'] ?? $_POST['id_potongan'] ?? null;
 
@@ -31,7 +31,7 @@ $data  = $potongan;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = array_merge($data, $_POST);
 
-    $id_karyawan       = $_POST['id_karyawan'] ?? '';
+    $id_karyawan      = $_POST['id_karyawan'] ?? '';
     $nama_potongan    = trim($_POST['nama_potongan'] ?? '');
     $total_potongan   = (int) str_replace(['.', ',', ' '], '', (string) ($_POST['total_potongan'] ?? ''));
     $tanggal_potongan = $_POST['tanggal_potongan'] ?? '';
@@ -77,8 +77,8 @@ require_once '../component/sidebar.php';
         <i class="bi bi-arrow-left"></i>
     </a>
     <div>
-        <h3 class="fw-bold mb-0">Edit potongan Gaji</h3>
-        <p class="text-muted mb-0">Perbarui data bonus / pendapatan tambahan karyawan</p>
+        <h3 class="fw-bold mb-0">Edit Potongan Gaji</h3>
+        <p class="text-muted mb-0">Perbarui data denda, kasbon, atau potongan lain</p>
     </div>
 </div>
 
@@ -107,24 +107,23 @@ require_once '../component/sidebar.php';
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Jenis potongan <span class="text-danger">*</span></label>
+                <label class="form-label">Jenis Potongan <span class="text-danger">*</span></label>
                 <input type="text" name="nama_potongan" class="form-control" required maxlength="20"
                        list="saran_potongan"
                        value="<?= htmlspecialchars($data['nama_potongan'] ?? '') ?>">
                 <datalist id="saran_potongan">
-                    <option value="Bonus Lembur">
-                    <option value="Bonus Kinerja">
-                    <option value="THR">
-                    <option value="Uang Makan">
-                    <option value="Uang Transport">
-                    <option value="Insentif">
+                    <option value="Kasbon">
+                    <option value="Denda Terlambat">
+                    <option value="Alpha">
+                    <option value="BPJS">
+                    <option value="Pelanggaran">
                 </datalist>
                 <div class="form-text">Maksimal 20 karakter.</div>
             </div>
 
             <div class="row g-3 mb-4">
                 <div class="col-md-6">
-                    <label class="form-label">Total potongan <span class="text-danger">*</span></label>
+                    <label class="form-label">Total Potongan <span class="text-danger">*</span></label>
                     <div class="input-group">
                         <span class="input-group-text">Rp</span>
                         <input type="number" name="total_potongan" class="form-control" required min="1" step="1"
@@ -132,7 +131,7 @@ require_once '../component/sidebar.php';
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Tanggal potongan <span class="text-danger">*</span></label>
+                    <label class="form-label">Tanggal Potongan <span class="text-danger">*</span></label>
                     <input type="date" name="tanggal_potongan" class="form-control" required
                            value="<?= htmlspecialchars($data['tanggal_potongan'] ?? '') ?>">
                 </div>

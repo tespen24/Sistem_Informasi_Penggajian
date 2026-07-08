@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 07, 2026 at 11:16 AM
+-- Generation Time: Jul 08, 2026 at 02:29 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -49,6 +49,13 @@ CREATE TABLE `akun` (
   `role` enum('admin','karyawan') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `akun`
+--
+
+INSERT INTO `akun` (`id_akun`, `username`, `password`, `role`) VALUES
+(1, 'admin_sistem', '$2y$10$7WpCOy0MWQPFbVTLBI8J5e9/F07zMxtSz4ylVO/613hWrohfCTK3S', 'admin');
+
 -- --------------------------------------------------------
 
 --
@@ -58,8 +65,6 @@ CREATE TABLE `akun` (
 CREATE TABLE `gaji` (
   `id_gaji` int(11) NOT NULL,
   `id_karyawan` int(11) DEFAULT NULL,
-  `id_perolehan_gaji` int(11) DEFAULT NULL,
-  `id_potongan_gaji` int(11) DEFAULT NULL,
   `bulan` tinyint(4) NOT NULL,
   `tahun` year(4) NOT NULL,
   `perolehan_gaji` int(11) NOT NULL,
@@ -80,6 +85,17 @@ CREATE TABLE `jabatan` (
   `gaji_pokok` int(11) NOT NULL,
   `tunjangan_jabatan` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `jabatan`
+--
+
+INSERT INTO `jabatan` (`id_jabatan`, `nama_jabatan`, `gaji_pokok`, `tunjangan_jabatan`) VALUES
+(103, 'Staff', 2900000, 300000),
+(104, 'Team Leader', 3800000, 600000),
+(105, 'Site Manager', 5500000, 1000000),
+(106, 'Manager', 8000000, 1500000),
+(107, 'General Manager', 12000000, 2500000);
 
 -- --------------------------------------------------------
 
@@ -150,9 +166,7 @@ ALTER TABLE `akun`
 --
 ALTER TABLE `gaji`
   ADD PRIMARY KEY (`id_gaji`),
-  ADD KEY `id_karyawan` (`id_karyawan`),
-  ADD KEY `id_perolehan_gaji` (`id_perolehan_gaji`),
-  ADD KEY `id_potongan_gaji` (`id_potongan_gaji`);
+  ADD UNIQUE KEY `uq_karyawan_periode` (`id_karyawan`,`bulan`,`tahun`);
 
 --
 -- Indexes for table `jabatan`
@@ -196,37 +210,37 @@ ALTER TABLE `absensi`
 -- AUTO_INCREMENT for table `akun`
 --
 ALTER TABLE `akun`
-  MODIFY `id_akun` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_akun` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `gaji`
 --
 ALTER TABLE `gaji`
-  MODIFY `id_gaji` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_gaji` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `jabatan`
 --
 ALTER TABLE `jabatan`
-  MODIFY `id_jabatan` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_jabatan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
 
 --
 -- AUTO_INCREMENT for table `karyawan`
 --
 ALTER TABLE `karyawan`
-  MODIFY `id_karyawan` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_karyawan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `perolehan_gaji`
 --
 ALTER TABLE `perolehan_gaji`
-  MODIFY `id_perolehan` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_perolehan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `potongan_gaji`
 --
 ALTER TABLE `potongan_gaji`
-  MODIFY `id_potongan` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_potongan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
@@ -242,9 +256,7 @@ ALTER TABLE `absensi`
 -- Constraints for table `gaji`
 --
 ALTER TABLE `gaji`
-  ADD CONSTRAINT `gaji_ibfk_1` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id_karyawan`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `gaji_ibfk_2` FOREIGN KEY (`id_perolehan_gaji`) REFERENCES `perolehan_gaji` (`id_perolehan`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `gaji_ibfk_3` FOREIGN KEY (`id_potongan_gaji`) REFERENCES `potongan_gaji` (`id_potongan`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `gaji_ibfk_1` FOREIGN KEY (`id_karyawan`) REFERENCES `karyawan` (`id_karyawan`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `karyawan`

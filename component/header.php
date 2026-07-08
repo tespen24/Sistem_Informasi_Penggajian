@@ -24,7 +24,7 @@ $role_tampil = $_SESSION['role'] ?? '';
         </button>
 
         <a class="navbar-brand fw-bold" href="<?= BASE_URL ?>dashboard_<?= $role_tampil === 'admin' ? 'admin' : 'karyawan' ?>.php">
-            <i class="bi bi-cash-coin me-1"></i> SI Penggajian
+            <i class="bi bi-cash-coin me-1"></i> SISFO Penggajian
         </a>
 
         <div class="d-flex align-items-center ms-auto">
