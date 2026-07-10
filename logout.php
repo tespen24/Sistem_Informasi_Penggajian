@@ -1,5 +1,5 @@
 <?php
-require_once 'config/config.php';
+require_once 'koneksi.php';
 
 // Hapus semua data session dan hancurkan session
 $_SESSION = [];

@@ -1,5 +1,5 @@
 <?php
-require_once 'config/config.php';
+require_once 'koneksi.php';
 cek_role(['admin']); // hanya admin yang boleh mengakses halaman ini
 
 $judul_halaman = 'Dashboard Admin - SI Penggajian';
@@ -68,8 +68,8 @@ $karyawan_terbaru = $koneksi->query(
      LIMIT 5"
 )->fetchAll();
 
-require_once 'component/header.php';
-require_once 'component/sidebar.php';
+require_once 'header.php';
+require_once 'sidebar.php';
 ?>
 
 <h3 class="fw-bold mb-1">Dashboard Admin</h3>
@@ -203,4 +203,4 @@ require_once 'component/sidebar.php';
     </div>
 </div>
 
-<?php require_once 'component/footer.php'; ?>
+<?php require_once 'footer.php'; ?>

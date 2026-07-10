@@ -1,5 +1,5 @@
 <?php
-require_once 'config/config.php';
+require_once 'koneksi.php';
 
 // Jika sudah login, langsung arahkan ke dashboard sesuai role
 if (isset($_SESSION['id_akun'])) {

@@ -1,5 +1,5 @@
 <?php
-require_once 'config/config.php';
+require_once 'koneksi.php';
 cek_role(['karyawan']); // hanya karyawan yang boleh mengakses halaman ini
 
 $judul_halaman = 'Dashboard Karyawan - SI Penggajian';
@@ -66,8 +66,8 @@ $warna_status = [
     'Alpha' => 'danger',
 ];
 
-require_once 'component/header.php';
-require_once 'component/sidebar.php';
+require_once 'header.php';
+require_once 'sidebar.php';
 ?>
 
 <h3 class="fw-bold mb-1">Dashboard Karyawan</h3>
@@ -194,4 +194,4 @@ require_once 'component/sidebar.php';
 
 <?php endif; ?>
 
-<?php require_once 'component/footer.php'; ?>
+<?php require_once 'footer.php'; ?>
